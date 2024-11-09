@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const VendorController_1 = require("../controllers/vendor/VendorController");
+const router = (0, express_1.Router)();
+const vendorController = new VendorController_1.VendorController();
+router.post('/Login', vendorController.login);
+router.post('/Register', vendorController.register);
+router.post('/refreshtoken', vendorController.refreshToken);
+exports.default = router;

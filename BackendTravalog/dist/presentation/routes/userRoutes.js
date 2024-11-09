@@ -1,0 +1,18 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const UserController_1 = require("../controllers/user/UserController");
+const router = (0, express_1.Router)();
+const userController = new UserController_1.UserController();
+router.post('/verifyLogin', userController.login);
+router.post('/Register', userController.register);
+router.post('/verifyOtp', userController.verifyOtp);
+router.post('/resendOtp', userController.resendOtp);
+router.post('/GoogleRegister', userController.googleregister);
+router.post('/GoogleLogin', userController.googlelogin);
+router.post('/forgotpassword', userController.forgotpassword);
+router.post('/resetPassverifyOtp', userController.resetPassverifyOtp);
+router.post('/resetPassword', userController.resetPassword);
+router.post('/refreshtoken', userController.refreshToken);
+router.post('/resendResetpassOtp', userController.resendResetpassOtp);
+exports.default = router;
