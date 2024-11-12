@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { ChevronLeft } from 'lucide-react';
 import { showToastMessage } from "../../validation/Toast";
 import {userResetPassOtpverify} from '../../features/user/userAction'
-import {userResendOtpresetpass} from'../../features/user/userAction'
+import {userResendOtpresetpass} from'../../features/user/userAction';
+import {useNavigate} from 'react-router-dom'
 interface OTPVerificationProps {}
 
 
@@ -11,7 +12,7 @@ const OTPVerification: React.FC<OTPVerificationProps> = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
   const [timeLeft, setTimeLeft] = useState<number>(30);
-
+const navigate = useNavigate()
   useEffect(() => {
     if (timeLeft === 0) {
       showToastMessage('OTP has expired. Click resend to get a new one.', 'error');
@@ -55,7 +56,8 @@ const OTPVerification: React.FC<OTPVerificationProps> = () => {
      const response = await userResetPassOtpverify({otp:enteredOtp})
      if(response.success){
       showToastMessage('OTP verified successfully', 'success');
-      alert('successss hridhya kkkkk')
+      alert('successss hridhya kkkkk');
+      navigate('/user/esetpassword')
      }
       
     } catch (err) {

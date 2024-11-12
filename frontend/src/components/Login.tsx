@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
-import { toast } from 'react-toastify';
+//import { toast } from 'react-toastify';
 import { Link, useNavigate } from 'react-router-dom';
 import { userLogin, usergoogleLogin,userforgotPassword } from '../features/user/userAction';
 import { RootState } from '../redux/store';
@@ -11,6 +11,7 @@ import { auth, provider } from "../config/firebaseconfig";
 import { signInWithPopup } from "firebase/auth";
 import { showToastMessage } from "../validation/Toast";
 import LoadingSpinner from './common/loadingSpinner';
+
 
 interface LoginFormData {
   email: string;
@@ -65,17 +66,17 @@ const Login: React.FC = () => {
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setShowLoadingSpinner(true);
-    if (validateLogin(loginFormData.email, loginFormData.password)) {
+  if (validateLogin(loginFormData.email, loginFormData.password)) {
       try {
         await dispatch(userLogin(loginFormData)).unwrap();
         console.log('Login successful');
       } catch (error) {
         console.error('Login failed:', error);
         showToastMessage('Login failed. Please try again.', 'error');
+      }finally{
+        setShowLoadingSpinner(false)
       }
-    } else {
-      showToastMessage('Invalid email or password format', 'error');
-    }
+    } 
   };
 
   const handleGoogleLogin = async () => {
@@ -102,8 +103,9 @@ const Login: React.FC = () => {
       const response = await userforgotPassword({ email: forgotPasswordFormData.email });
       if (response.success) {
             navigate('/user/resetpassOtp');
+            showToastMessage('Password reset instructions sent to your email', 'success');
       } else {
-        showToastMessage('Password reset instructions sent to your email', 'success');
+        showToastMessage('Password reset instructions sent to your email', 'error');
         setShowForgotPasswordModal(false);
       }
     } catch (error: any) {
@@ -290,10 +292,11 @@ const Login: React.FC = () => {
   </div>
 )}
          
-         {showLoadingSpinner && <LoadingSpinner />}
+       
 
         </div>
       </div>
+      {showLoadingSpinner && <LoadingSpinner />}
     </div>
   );
 };
@@ -326,235 +329,3 @@ export default Login;
 
 
 
-
-
-
-// import React, { useState, useEffect } from 'react';
-// import {useDispatch,useSelector } from 'react-redux';
-// import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
-// import { toast } from 'react-toastify';
-// import { Link, useNavigate} from 'react-router-dom';
-//  //import { authLogin } from '../redux/userRedux/userThunk';
-// import { userLogin,usergoogleLogin } from '../features/user/userAction';
-// //import { selectIsUserAuthenticated,selectUser } from '../features/user/userSlice';
-// import { RootState } from '../redux/store'; 
-// import { AppDispatch } from '../redux/store'; 
-// import { auth, provider } from "../config/firebaseconfig";
-// import { signInWithPopup } from "firebase/auth";
-
-// interface LoginFormData {
-//   email: string;
-//   password: string;
-// }
-
-
-// interface GoogleUser {
-//   email: string ;
-// }
-
-// const Login: React.FC = () => {
-
-//   const [formData, setFormData] = useState<LoginFormData>({ email: '', password: '' });
-//   const [showPassword, setShowPassword] = useState(false);
-//    const [error] = useState<string | null>(null);
-//  // const [currentImageIndex, setCurrentImageIndex] = useState(0);
-//  const [currentImageIndex] = useState(0);
-
-//   const dispatch = useDispatch<AppDispatch>();
-//  const navigate = useNavigate();
-
- 
-//   const images = [
-//     'bg.jpeg',
-//     'img4.jpeg',
-//     'img7.jpg',
-//   ];
-
-//   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
-//   useEffect(() => {
-//     if (isAuthenticated) {
-//       navigate('/user/home');
-//     }
-//   }, [isAuthenticated, navigate]);
-
-//   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-//     const { name, value } = event.target;
-//     setFormData((prevData) => ({ ...prevData, [name]: value }));
-//   };
-
-  
-
-
-//   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-//     event.preventDefault();
-  
-   
-//     if (validateLogin(formData.email, formData.password)) {
-//       try {
-//         alert(`Email: ${formData.email}\nPassword: ${formData.password}`);
-       
-//     await dispatch(userLogin(formData)).unwrap();;
-   
-     
-//         console.log('Login successful');
-//       } catch (error) {
-       
-//         console.error('Login failed:', error);
-//         toast.error('Login failed. Please try again.');
-//       }
-//     } else {
-//       toast.error('Invalid email or password format');
-//     }
-//   };
-  
-//   const handleGoogleLogin = async () => { // Removed form event parameter
-//     try {
-//       const result = await signInWithPopup(auth, provider);
-//       const user = result.user;
-//       if(user.email){
-//         const userData: GoogleUser = {
-      
-//           email: user.email,
-         
-//         };
-        
-//         await dispatch(usergoogleLogin(userData)).unwrap();
-//       }
-     
-  
-//       // if (response.status === 'success') { 
-//       //   toast.success('Google registration successful!');
-//       //   navigate("/home");
-//       // }else if(response.message==='user already excisting'){
-//       //   toast.error(response.message || 'user already excisted');
-//       //   navigate("/");
-//       // }else{
-//       //   toast.error(response.message || 'Registration failed');
-//       // }
-
-      
-//     } catch (error: any) {
-//       console.error('Google Sign Up Error:', error);
-//       toast.error(error.message || 'Something went wrong during Google sign up');
-//     }
-//   };
-
-
-//   const validateLogin = (email: string, password: string): boolean => {
-//     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-//     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-  
-//     if (!emailRegex.test(email)) {
-//       toast.error("Invalid email address");
-//       return false;
-//     }
-  
-//     if (!passwordRegex.test(password)) {
-//       toast.error("Password must be at least 8 characters long and include uppercase, lowercase, number, and special character");
-//       return false;
-//     }
-  
-//     return true;
-//   };
-
-//   return (
-//     <div className="flex flex-col md:flex-row h-screen">
-//       <div className="hidden md:flex md:w-1/2 bg-yellow-400 relative">
-//         <div 
-//           className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000"
-//           style={{ backgroundImage: `url(${images[currentImageIndex]})` }}
-//         />
-//         <div className="absolute bottom-0 left-0 p-4 bg-white bg-opacity-75 w-full">
-//           <h2 className="text-lg font-bold mb-2">Get ready to:</h2>
-//           <ul className="space-y-1">
-//             <li className="flex items-center text-sm">
-//               <span className="text-green-600 mr-2">✓</span>
-//               Save even more with reward rates from our partner sites
-//             </li>
-//             <li className="flex items-center text-sm">
-//               <span className="text-green-600 mr-2">✓</span>
-//               Easily pick up your search again from any device
-//             </li>
-//           </ul>
-//         </div>
-//       </div>
-
-//       <div className="w-full md:w-1/2 flex flex-col items-center justify-start px-4 py-6 overflow-y-auto">
-//         <img src="/logo.svg" alt="" className="w-40 mb-6" />
-//         <div className="w-full max-w-md">
-//           <h1 className="text-xl font-bold mb-2">Unlock more savings as a member</h1>
-//           <p className="text-gray-600 mb-4 text-sm">Log in or create account with your email</p>
-          
-//           <form onSubmit={handleSubmit} className="space-y-4">
-//             <div className="relative">
-//               <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-//               <input
-//                 type="email"
-//                 name="email"
-//                 placeholder="Enter email address"
-//                 value={formData.email}
-//                 onChange={handleChange}
-//                 className="w-full pl-10 pr-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-//               />
-//             </div>
-//             <div className="relative">
-//               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-//               <input
-//                 type={showPassword ? 'text' : 'password'}
-//                 name="password"
-//                 placeholder="Enter password"
-//                 value={formData.password}
-//                 onChange={handleChange}
-//                 className="w-full pl-10 pr-10 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-//               />
-//               <button
-//                 type="button"
-//                 onClick={() => setShowPassword(!showPassword)}
-//                 className="absolute right-3 top-1/2 transform -translate-y-1/2"
-//               >
-//                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-//               </button>
-//             </div>
-            
-//             {error && (
-//               <div className="bg-red-100 border border-red-400 text-red-700 px-3 py-2 rounded relative text-sm" role="alert">
-//                 <span className="block sm:inline">{error}</span>
-//               </div>
-//             )}
-            
-//             <button
-//               type="submit"
-//               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline text-sm"
-//             >
-//               Continue
-//             </button>
-//           </form>
-          
-//           <p className="text-center text-xs text-gray-500 mt-4">or continue with</p>
-          
-//           <div className="flex justify-center mt-3">
-//             <button
-//               onClick={handleGoogleLogin} 
-//               className="flex items-center space-x-2 border border-gray-300 rounded-md px-3 py-1 hover:bg-gray-50 text-sm"
-//             >
-//               <img src="/google.png" alt="Google" className="w-4 h-4" />
-//               <span>Google</span>
-//             </button>
-//           </div>
-//           <p>
-//           <p className="text-center text-xs text-gray-500 mt-6">
-//           Does not have any accound?&nbsp;
-//   <Link to="/user/register" className="text-blue-500 hover:underline">
-//     Register here
-//   </Link>
-//   </p>
-//           </p>
-         
-
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Login;

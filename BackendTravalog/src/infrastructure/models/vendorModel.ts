@@ -18,6 +18,15 @@ const vendorSchema = new Schema<IVendor>({
     type:String,
     required:true
   },
+  address:{
+type:String
+  },
+  city:{
+    type:String
+  },
+  description:{
+tyep :String
+  },
   is_blocked:{
     type:Boolean,
     default:false

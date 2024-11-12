@@ -177,10 +177,10 @@ const Register: React.FC = () => {
     if(vendorRegValidation === true){
       const response = await vendorRegister({name, email, mobile, password,address,city,description,documents});
       if (response === true) {
-        toast.success('Registration successful!');
+       
         setTimeout(() => {
-          navigate('/vendor');
-        }, 6000);
+          navigate('/vendor/otp');
+        }, 2000);
       } else {
         toast.error('Registration failed');
       }

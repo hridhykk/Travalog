@@ -61,5 +61,24 @@ class VendorRepository {
             };
         }
     }
+    async updatePasswordByEmail(email, newPassword) {
+        try {
+            const updatedUser = await vendorModel_1.VendorModel.findOneAndUpdate({ email }, {
+                $set: {
+                    password: newPassword
+                }
+            }, {
+                new: true,
+                runValidators: true
+            });
+            if (!updatedUser) {
+                throw new Error("User not found");
+            }
+            return updatedUser;
+        }
+        catch (error) {
+            throw error;
+        }
+    }
 }
 exports.VendorRepository = VendorRepository;

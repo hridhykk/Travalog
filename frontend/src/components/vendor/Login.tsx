@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
-import { ToastContainer, toast } from 'react-toastify';
+import {  toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { vendorLogin } from '../../features/vendor/vendorAction';
 import { RootState } from '../../redux/store';
 import { AppDispatch } from '../../redux/store';
 import { useDispatch, useSelector } from 'react-redux';
 import LoadingSpinner from '../common/loadingSpinner';
+import { showToastMessage } from "../../validation/Toast";
+import { vendorAxios } from "../../Axiosconfig/Axiosconfig";
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({
     email: '',
@@ -44,24 +46,51 @@ const Login: React.FC = () => {
 
   const isAuthenticated = useSelector((state: RootState) => state.vendor.isAuthenticated);
   useEffect(() => {
+    
     setShowLoadingSpinner(false);
     if (isAuthenticated) {
-      navigate('/user/home');
+
+      navigate('/vendor/home');
     }
   }, [isAuthenticated, navigate]);
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const { email, password } = formData;
-    await dispatch(vendorLogin({ email, password }));
+    setShowLoadingSpinner(true);
+    try{
+      const { email, password } = formData;
+      await dispatch(vendorLogin({ email, password })).unwrap();
+    }catch(error){
+      console.error('Login failed:', error);
+      showToastMessage('Login failed. Please try again.', 'error');
+    }
+    
+    
     
   };
-
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // Your existing forgot password logic here
-      toast.info('Password reset link has been sent to your email.');
-      setShowForgotModal(false);
+      // Send email as an object
+      const response = await vendorAxios.post<{status: string, message: string}>(
+        '/vendor/verifyemail',
+        { email: forgotEmail }  // Changed this line to send as an object
+      );
+      
+      const { message, status } = response.data;
+      if (status === 'success') {  // Fixed comparison operator
+        toast.success(message)
+        showToastMessage(message, 'success');
+        setTimeout(()=>{
+          navigate('/vendor/resetpassOtp');
+        },2000)
+       
+      }else if(status==='failed'){
+        showToastMessage(message, 'error');
+       
+      }
+      // toast.info('Password reset link has been sent to your email.');
+      // setShowForgotModal(false);
     } catch (error) {
       toast.error('Failed to send reset link. Please try again.');
     }
@@ -191,7 +220,7 @@ const Login: React.FC = () => {
         </div>
       )}
 
-      <ToastContainer />
+{showLoadingSpinner && <LoadingSpinner />}
     </div>
   );
 };

@@ -42,6 +42,15 @@ const vendorSchema = new mongoose_1.Schema({
         type: String,
         required: true
     },
+    address: {
+        type: String
+    },
+    city: {
+        type: String
+    },
+    description: {
+        tyep: String
+    },
     is_blocked: {
         type: Boolean,
         default: false

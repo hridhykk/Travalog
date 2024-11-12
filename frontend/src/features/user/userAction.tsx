@@ -69,9 +69,9 @@ export const userRegister = async(RegistrationData:RegisterData):Promise<Registr
 
 
 
-export const userverifyOTP = async (otp: string): Promise<RegistrationResponse> => {
+export const userverifyOTP = async (data:{otp: string}): Promise<RegistrationResponse> => {
     try {
-      const data: Otp = { otp: otp };
+      
       const response = await apiService.verifyOtp(data);
       
       if (!response.data) {
@@ -171,8 +171,8 @@ export const userLogin = createAsyncThunk(
         // }
         return response.data;
       }else if (response.data.status === 'failed') {
-        showToastMessage(response.data.message || 'Registration user already excist', 'error');
-        return false;
+        showToastMessage(response.data.message , 'error');
+        return ;
       } else {
         showToastMessage('Unexpected response from server', 'error');
         return false;

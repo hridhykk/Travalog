@@ -8,10 +8,26 @@ declare module 'express-session' {
       mobile?: string;
       password?: string;
     };
+    vendor?: {
+      _id?: string;
+      name: string;
+      email: string;
+      mobile?: string;
+      address: string;
+      city: string;
+      description: string;
+      documents?: string;
+      password: string;
+      
+    };
     otp?: {
       value: string;
       generated: string;
     };
+    VendorOtp?:{
+      value:string;
+      generated:string
+    }
   }
 }
 

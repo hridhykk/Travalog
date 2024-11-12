@@ -3,18 +3,47 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { showToastMessage } from "../../validation/Toast";
 import {apiService} from '../../sevice/vendorauthService'
 import { vendorRegisterData} from "./vendorType";
-//import axios from 'axios';
+import axios from 'axios';
+import { vendorAxios } from "../../Axiosconfig/Axiosconfig";
+//import { toast } from "react-toastify"; 
+const url = `http://localhost:5000`;
+
+
+
+const handleApiError = (error: any): never => {
+  if (error.response?.data) {
+   
+    const errorMessage = error.response.data.message || 'An unexpected error occurred';
+    showToastMessage(errorMessage, 'error');
+    throw new Error(errorMessage);
+  } else if (error.request) {
+   
+    const errorMessage = 'Network error. Please check your connection.';
+    showToastMessage(errorMessage, 'error');
+    throw new Error(errorMessage);
+  } else {
+  
+    const errorMessage = error.message || 'An unexpected error occurred';
+    showToastMessage(errorMessage, 'error');
+    throw new Error(errorMessage);
+  }
+};
+
+
+
 
 
 export const vendorRegister = async(vendorRegistrationData:vendorRegisterData):Promise<boolean> =>{
   try{
     alert(vendorRegistrationData.documents)
     const response = await apiService.Register(vendorRegistrationData);;
-    if (response.data.status === 'success') {
-      showToastMessage('Registration successful!', 'success');
+    const { status, message } = response.data;
+
+     if (status === 'success') {
+      showToastMessage(message , 'success');
      return true;
-   } else if (response.data.status === 'false') {
-     showToastMessage(response.data.message || 'Registration user already excist', 'error');
+   } else if (status === 'false') {
+     showToastMessage(message || 'Registration user already excist', 'error');
      return false;
    } else {
      showToastMessage('Unexpected response from server', 'error');
@@ -35,7 +64,7 @@ export const vendorRegister = async(vendorRegistrationData:vendorRegisterData):P
 //   message: string;
 // }
 
-// const url = `http://localhost:5000`;
+ 
 
 // export const vendorRegister = async (vendorRegistrationData: vendorRegisterData): Promise<boolean> => {
 //   try {
@@ -99,10 +128,15 @@ export const vendorLogin = createAsyncThunk(
     try {
       
       const response = await apiService.Login(credentials);
-      
-      if (response.data.status === 'success') {
-        showToastMessage('successfully Login','success');
+      const {status,message } = response.data
+      if (status === 'success') {
+        if(message){
+          
+          showToastMessage(message,'success');
         
+ 
+        }
+       
         return response.data;
 
       }else if (response.data.status === 'false') {
@@ -114,10 +148,113 @@ export const vendorLogin = createAsyncThunk(
       }
       
       throw new Error(response.data.message || 'Login failed');
-    } catch (error) {
-     
-      throw error;
+    } catch (error: any) {
+      return handleApiError(error);
     }
   }
 );
+
+
+// interface ApiErrorResponse {
+//   status: string;
+//   message: string;
+// }
+
+
+
+
+
+
+export const VendorverifyOTP = async (otp: {otp:string}): Promise<{success:boolean;message:string}> => {
+  try {
+  
+    const response = await apiService.verifyOtp(otp);
+    
+    if (!response.data) {
+      throw new Error('No response data received');
+    }
+
+    const { status, message } = response.data;
+  
+  alert(message)
+    if (status === 'success') {
+      
+      showToastMessage('OTP verified successfully', 'success');
+      return {
+        success: true,
+        message: message
+      };
+    } else {
+      showToastMessage(message || 'OTP verification failed', 'error');
+      return {
+        success: false,
+        message: message
+      };
+    }
+  } catch (error: any) {
+    return handleApiError(error);
+  }
+}
+
+
+export const vendorResendOtp = async():Promise<{success:boolean,message:string}>=>{
+  try{
+    const response = await apiService.ResendOtp()
+ const { status, message } = response.data;
+ if(status==='success'){
+  showToastMessage('OTP verified successfully', 'success');
+  return {
+    success: true,
+    message: message
+  };
+ }
+  else {
+    showToastMessage(response.data.message,'error')
+    return{
+      success: false,
+      message: message
+    }
+  }
+  }catch (error: any) {
+    return handleApiError(error);
+  }
+}
+
+
+
+
+
+
+
+
+
+
+export const VendorResetpass = async(password:{password:string}):Promise<{success:boolean,message:string}>=>{
+  try{
+    const response = await vendorAxios.post<{ status: string, message: string }>(
+      `${url}/vendor/resetpass`,
+      password,
+      {
+        withCredentials: true,
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
+  const {status,message} = response.data;
+  if(status==='success'){
+    showToastMessage(message,'success')
+return{
+  success:true,
+  message:message
+}
+  }else{
+    showToastMessage(message,'error');
+    return{
+      success:false,
+      message:message
+    }
+  }
+  }catch(error:any){
+    return handleApiError(error)
+  }
+}
 

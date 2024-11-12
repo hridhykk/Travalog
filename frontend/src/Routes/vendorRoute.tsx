@@ -5,6 +5,10 @@ import VendorLogin from '../pages/vendor/VendorLogin';
 import VendorRegister from '../pages/vendor/VendorRegister';
 import VendorHome from '../pages/vendor/VendorHome';
 import { RootState } from '../redux/store';
+import VendorRegOtp from '../pages/vendor/VendorRegOtp';
+import VendorResetpass from '../pages/vendor/VendorResetpass';
+import ResetpassOtp from '../pages/vendor/ResetpassOtp'
+
 
 const ProtectedVendorRoute = () => {
  
@@ -37,6 +41,9 @@ const VendorRoutes = () => {
       <Route element={<PublicVendorRoute />}>
         <Route path="/" element={<VendorLogin />} />
         <Route path="/register" element={<VendorRegister />} />
+        <Route path="/otp" element={<VendorRegOtp/>} />
+        <Route path="resetpassword" element={<VendorResetpass />} />
+        <Route path="resetpassOtp" element={<ResetpassOtp />} />
       </Route>
 
     

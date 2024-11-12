@@ -72,4 +72,30 @@ return VendorModel.create(user)
       };
     }
   }
+
+  async updatePasswordByEmail(email: string, newPassword: string): Promise<IVendor| null> {
+    try {
+      const updatedUser = await VendorModel.findOneAndUpdate(
+        { email },
+        {
+          $set: {
+            password: newPassword
+          }
+        },
+        {
+          new: true,
+          runValidators: true
+        }
+      );
+
+      if (!updatedUser) {
+        throw new Error("User not found");
+      }
+
+      return updatedUser;
+    } catch (error) {
+      throw error;
+    }
+  }
+
 }
